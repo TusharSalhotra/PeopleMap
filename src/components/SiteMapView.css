@@ -1,0 +1,72 @@
+.marker-cont {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.info-marker-wrap {
+  padding: 8px;
+}
+
+.map-container {
+  width: 100%;
+  height: 70vh;
+}
+
+@media (min-width: 640px) {
+  .map-container {
+    width: 70vw;
+    height: 70vh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .map-container {
+    width: 100%;
+    height: 70vh;
+  }
+}
+
+.map-loader {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.label-values {
+  color: #032d60;
+}
+
+.key-value {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.site-name-marker {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.get-directions {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  color: #1890ff;
+  font-size: 13px;
+}
+
+.view-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.view-subtitle {
+  margin: 0 0 16px;
+  color: #666;
+  font-size: 14px;
+}

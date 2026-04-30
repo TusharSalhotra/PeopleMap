@@ -1,0 +1,43 @@
+.tracking-left {
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.tracking-summary {
+  background-color: #fff4df;
+  border: 1px solid #c0943c;
+  color: #c0943c;
+  padding: 10px 14px;
+  border-radius: 5px;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.status-heading {
+  padding: 10px 0;
+  text-align: center;
+  color: #e60000;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.map-wrapper {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.view-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.view-subtitle {
+  margin: 0 0 16px;
+  color: #666;
+  font-size: 14px;
+}
