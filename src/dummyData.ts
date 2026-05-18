@@ -1,6 +1,8 @@
 // ─── Dummy data used across all map views ────────────────────────────────────
 
-export const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? "";
+export const GOOGLE_MAPS_API_KEY_STORAGE_KEY = "google-maps-api-key";
+export const DEFAULT_GOOGLE_API_KEY =
+  process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? "AIzaSyDUMMY_KEY_FOR_LOCAL_DEVELOPMENT";
 
 // Company / branch center coordinate (New York City area)
 export const COMPANY_CENTER = { lat: 40.7128, lng: -74.006 };

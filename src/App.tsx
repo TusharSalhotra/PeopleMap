@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Alert, Layout, Menu, Typography } from "antd";
+import { Alert, Button, Input, Layout, Menu, Space, Typography } from "antd";
 import { EnvironmentOutlined, RadarChartOutlined, DeploymentUnitOutlined } from "@ant-design/icons";
 import SiteMapView from "./components/SiteMapView";
 import LiveTrackingView from "./components/LiveTrackingView";
 import BeatManagementView from "./components/BeatManagementView";
+import { DEFAULT_GOOGLE_API_KEY, GOOGLE_MAPS_API_KEY_STORAGE_KEY } from "./dummyData";
 import "./App.css";
 
 const { Header, Content } = Layout;
@@ -13,6 +14,36 @@ type View = "sitemap" | "tracking" | "beats";
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>("sitemap");
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState(() => {
+    if (typeof window === "undefined") {
+      return DEFAULT_GOOGLE_API_KEY;
+    }
+
+    return localStorage.getItem(GOOGLE_MAPS_API_KEY_STORAGE_KEY) ?? DEFAULT_GOOGLE_API_KEY;
+  });
+  const [apiKeyDraft, setApiKeyDraft] = useState(googleMapsApiKey);
+
+  const applyGoogleMapsApiKey = () => {
+    const nextKey = apiKeyDraft.trim();
+    setGoogleMapsApiKey(nextKey);
+
+    if (typeof window !== "undefined") {
+      if (nextKey) {
+        localStorage.setItem(GOOGLE_MAPS_API_KEY_STORAGE_KEY, nextKey);
+      } else {
+        localStorage.removeItem(GOOGLE_MAPS_API_KEY_STORAGE_KEY);
+      }
+    }
+  };
+
+  const resetGoogleMapsApiKey = () => {
+    setApiKeyDraft(DEFAULT_GOOGLE_API_KEY);
+    setGoogleMapsApiKey(DEFAULT_GOOGLE_API_KEY);
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(GOOGLE_MAPS_API_KEY_STORAGE_KEY);
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -48,14 +79,31 @@ export default function App() {
 
       <Content className="app-content">
         <Alert
-          message="Demo Mode - using local dummy data. Add REACT_APP_GOOGLE_MAPS_API_KEY in Vercel to enable Google Maps."
+          message="Google Maps API Key"
+          description={
+            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+              <div>Enter a key below to render maps immediately without redeploying. The value is stored in this browser.</div>
+              <Space.Compact style={{ width: "100%" }}>
+                <Input
+                  placeholder="Enter Google Maps API key"
+                  value={apiKeyDraft}
+                  onChange={(event) => setApiKeyDraft(event.target.value)}
+                  onPressEnter={applyGoogleMapsApiKey}
+                />
+                <Button type="primary" onClick={applyGoogleMapsApiKey}>
+                  Apply Key
+                </Button>
+                <Button onClick={resetGoogleMapsApiKey}>Reset</Button>
+              </Space.Compact>
+            </Space>
+          }
           type="warning"
           showIcon
           closable
           style={{ marginBottom: 20 }}
         />
-        {activeView === "sitemap" && <SiteMapView />}
-        {activeView === "tracking" && <LiveTrackingView />}
+        {activeView === "sitemap" && <SiteMapView apiKey={googleMapsApiKey} />}
+        {activeView === "tracking" && <LiveTrackingView apiKey={googleMapsApiKey} />}
         {activeView === "beats" && <BeatManagementView />}
       </Content>
     </Layout>

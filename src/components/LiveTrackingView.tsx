@@ -7,7 +7,6 @@ import {
 } from "@react-google-maps/api";
 import { Alert, Col, DatePicker, Flex, Form, Pagination, Row, Select, Spin, Button } from "antd";
 import {
-  GOOGLE_API_KEY,
   COMPANY_CENTER,
   DUMMY_EMPLOYEES,
   DUMMY_LOGGED_USERS,
@@ -19,7 +18,11 @@ import "./LiveTrackingView.css";
 
 const mapContainerStyle = { width: "100%", height: "60vh" };
 
-export default function LiveTrackingView() {
+interface LiveTrackingViewProps {
+  apiKey: string;
+}
+
+export default function LiveTrackingView({ apiKey }: LiveTrackingViewProps) {
   const [form] = Form.useForm();
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
   const [allWaypoints, setAllWaypoints] = useState<TrackingPoint[]>(DUMMY_LOGGED_USERS);
@@ -152,15 +155,15 @@ export default function LiveTrackingView() {
               : "All Logged-in Officers"}
           </div>
           <div className="map-wrapper">
-            {!GOOGLE_API_KEY ? (
+            {!apiKey ? (
               <Alert
                 message="Google Maps API key is missing"
-                description="Set REACT_APP_GOOGLE_MAPS_API_KEY in Vercel Project Settings, then redeploy the app."
+                description="Enter a Google Maps API key above to render the map."
                 type="error"
                 showIcon
               />
             ) : (
-              <LoadScript googleMapsApiKey={GOOGLE_API_KEY}>
+              <LoadScript googleMapsApiKey={apiKey}>
                 <Spin spinning={loader}>
                   <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={13}>
                     {shouldRenderPath &&
