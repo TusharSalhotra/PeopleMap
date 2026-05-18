@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { Marker, InfoWindow, Circle } from "@react-google-maps/api";
 import moment from "moment";
 import { TrackingPoint } from "../dummyData";

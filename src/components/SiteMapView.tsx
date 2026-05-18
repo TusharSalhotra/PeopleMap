@@ -6,7 +6,7 @@ import {
   InfoWindow,
   useJsApiLoader,
 } from "@react-google-maps/api";
-import { Spin } from "antd";
+import { Alert, Spin } from "antd";
 import { GOOGLE_API_KEY, DUMMY_SITE_LOCATIONS, SiteLocation } from "../dummyData";
 import "./SiteMapView.css";
 
@@ -27,9 +27,25 @@ function findAngles(center: Coordinate, points: any[]) {
 }
 
 export default function SiteMapView() {
+  if (!GOOGLE_API_KEY) {
+    return (
+      <Alert
+        message="Google Maps API key is missing"
+        description="Set REACT_APP_GOOGLE_MAPS_API_KEY in Vercel Project Settings, then redeploy the app."
+        type="error"
+        showIcon
+      />
+    );
+  }
+
+  return <SiteMapMap />;
+}
+
+function SiteMapMap() {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: GOOGLE_API_KEY,
+    preventGoogleFontsLoading: true,
   });
 
   const mapRef = useRef<any>(null);

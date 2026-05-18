@@ -5,13 +5,13 @@ import {
   GoogleMap,
   LoadScript,
 } from "@react-google-maps/api";
-import { Col, DatePicker, Flex, Form, Pagination, Row, Select, Spin, Button } from "antd";
+import { Alert, Col, DatePicker, Flex, Form, Pagination, Row, Select, Spin, Button } from "antd";
 import {
   GOOGLE_API_KEY,
   COMPANY_CENTER,
   DUMMY_EMPLOYEES,
   DUMMY_LOGGED_USERS,
-  DUMMY_ROUTE_WAYPOINTS, live map view
+  DUMMY_ROUTE_WAYPOINTS,
   TrackingPoint,
 } from "../dummyData";
 import MarkerComponent from "./MarkerComponent";
@@ -23,7 +23,6 @@ export default function LiveTrackingView() {
   const [form] = Form.useForm();
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
   const [allWaypoints, setAllWaypoints] = useState<TrackingPoint[]>(DUMMY_LOGGED_USERS);
-  const [waypoints, setWaypoints] = useState<TrackingPoint[]>([]);
   const [recentWaypoints, setRecentWaypoints] = useState<TrackingPoint[]>([]);
   const [shouldRenderPath, setShouldRenderPath] = useState(false);
   const [requestStatus, setRequestStatus] = useState<"idle" | "done">("idle");
@@ -52,7 +51,6 @@ export default function LiveTrackingView() {
       if (values.employee_id) {
         const data = DUMMY_ROUTE_WAYPOINTS;
         setAllWaypoints(data);
-        setWaypoints(data.length > 23 ? data.slice(-23) : data);
         setShouldRenderPath(true);
       } else {
         setAllWaypoints(DUMMY_LOGGED_USERS);
@@ -80,7 +78,7 @@ export default function LiveTrackingView() {
         setRequestStatus("done");
       }
     },
-    [recentWaypoints]
+    []
   );
 
   useEffect(() => {
@@ -118,7 +116,7 @@ export default function LiveTrackingView() {
                 format="MM/DD/YYYY HH:mm"
                 showTime={{ use12Hours: false }}
                 style={{ width: "100%" }}
-                disabledDate={(d) => d && d.isAfter(new Date())}
+                disabledDate={(d) => d?.isAfter(new Date())}
               />
             </Form.Item>
             <Form.Item label="End Time" name="end_time">
@@ -126,7 +124,7 @@ export default function LiveTrackingView() {
                 format="MM/DD/YYYY HH:mm"
                 showTime={{ use12Hours: false }}
                 style={{ width: "100%" }}
-                disabledDate={(d) => d && d.isAfter(new Date())}
+                disabledDate={(d) => d?.isAfter(new Date())}
               />
             </Form.Item>
             <Flex justify="end" gap={8}>
@@ -157,58 +155,67 @@ export default function LiveTrackingView() {
               : "All Logged-in Officers"}
           </div>
           <div className="map-wrapper">
-            <LoadScript googleMapsApiKey={GOOGLE_API_KEY}>
-              <Spin spinning={loader}>
-                <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={13}>
-                  {shouldRenderPath &&
-                    requestStatus === "idle" &&
-                    recentWaypoints.length > 1 && (
-                      <DirectionsService
-                        key={recentWaypoints.map((wp) => `${wp.lat},${wp.lng}`).join("-")}
+            {!GOOGLE_API_KEY ? (
+              <Alert
+                message="Google Maps API key is missing"
+                description="Set REACT_APP_GOOGLE_MAPS_API_KEY in Vercel Project Settings, then redeploy the app."
+                type="error"
+                showIcon
+              />
+            ) : (
+              <LoadScript googleMapsApiKey={GOOGLE_API_KEY}>
+                <Spin spinning={loader}>
+                  <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={13}>
+                    {shouldRenderPath &&
+                      requestStatus === "idle" &&
+                      recentWaypoints.length > 1 && (
+                        <DirectionsService
+                          key={recentWaypoints.map((wp) => `${wp.lat},${wp.lng}`).join("-")}
+                          options={{
+                            origin: { lat: recentWaypoints[0].lat, lng: recentWaypoints[0].lng },
+                            destination: {
+                              lat: recentWaypoints[recentWaypoints.length - 1]?.lat ?? recentWaypoints[0].lat,
+                              lng: recentWaypoints[recentWaypoints.length - 1]?.lng ?? recentWaypoints[0].lng,
+                            },
+                            travelMode: google.maps.TravelMode.DRIVING,
+                            waypoints: recentWaypoints.slice(1, -1).map((p) => ({
+                              location: { lat: p.lat, lng: p.lng },
+                            })),
+                          }}
+                          callback={directionsCallback}
+                        />
+                      )}
+
+                    {response && recentWaypoints.length > 1 && (
+                      <DirectionsRenderer
                         options={{
-                          origin: { lat: recentWaypoints[0].lat, lng: recentWaypoints[0].lng },
-                          destination: {
-                            lat: recentWaypoints[recentWaypoints.length - 1].lat,
-                            lng: recentWaypoints[recentWaypoints.length - 1].lng,
+                          directions: response,
+                          suppressMarkers: true,
+                          preserveViewport: true,
+                          polylineOptions: {
+                            strokeColor: "#FF0000",
+                            strokeOpacity: 1,
+                            strokeWeight: 5,
                           },
-                          travelMode: google.maps.TravelMode.DRIVING,
-                          waypoints: recentWaypoints.slice(1, -1).map((p) => ({
-                            location: { lat: p.lat, lng: p.lng },
-                          })),
                         }}
-                        callback={directionsCallback}
                       />
                     )}
 
-                  {response && recentWaypoints.length > 1 && (
-                    <DirectionsRenderer
-                      options={{
-                        directions: response,
-                        suppressMarkers: true,
-                        preserveViewport: true,
-                        polylineOptions: {
-                          strokeColor: "#FF0000",
-                          strokeOpacity: 1.0,
-                          strokeWeight: 5,
-                        },
-                      }}
-                    />
-                  )}
-
-                  {paginatedMarkers.map((point, index) => (
-                    <MarkerComponent
-                      key={`${point.id}-${index}`}
-                      point={point}
-                      index={index}
-                      activeMarker={activeMarker}
-                      setActiveMarker={setActiveMarker}
-                      markers_data={allWaypoints}
-                      user_id={selectedEmployee}
-                    />
-                  ))}
-                </GoogleMap>
-              </Spin>
-            </LoadScript>
+                    {paginatedMarkers.map((point, index) => (
+                      <MarkerComponent
+                        key={`${point.id}-${index}`}
+                        point={point}
+                        index={index}
+                        activeMarker={activeMarker}
+                        setActiveMarker={setActiveMarker}
+                        markers_data={allWaypoints}
+                        user_id={selectedEmployee}
+                      />
+                    ))}
+                  </GoogleMap>
+                </Spin>
+              </LoadScript>
+            )}
 
             {allWaypoints.length > pageSize && (
               <Flex justify="end" style={{ padding: "10px" }}>

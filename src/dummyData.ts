@@ -1,6 +1,6 @@
 // ─── Dummy data used across all map views ────────────────────────────────────
 
-export const GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY"; // Replace with your key
+export const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? "";
 
 // Company / branch center coordinate (New York City area)
 export const COMPANY_CENTER = { lat: 40.7128, lng: -74.006 };
@@ -96,7 +96,7 @@ export const DUMMY_LOGGED_USERS: TrackingPoint[] = [
   {
     id: 3,
     lat: 40.73,
-    lng: -74.0,
+    lng: -74,
     agent_name: "Mike Johnson",
     patrol: true,
     created_at: new Date(Date.now() - 30 * 60000).toISOString(),
@@ -158,5 +158,82 @@ export const DUMMY_ROUTE_WAYPOINTS: TrackingPoint[] = [
     type: "Patrol End",
     patrol: true,
     created_at: new Date(Date.now() - 10 * 60000).toISOString(),
+  },
+];
+
+// ─── Beat-management data (used in BeatManagementView) ──────────────────────
+export interface BeatAssignment {
+  id: number;
+  beat_id: string;
+  beat_name: string;
+  zone: string;
+  priority: "High" | "Medium" | "Low";
+  assigned_officer: string;
+  shift: "Morning" | "Evening" | "Night";
+  status: "Active" | "On Hold" | "Completed";
+  checkpoints: number;
+  last_patrol_at: string;
+}
+
+export const DUMMY_BEAT_ASSIGNMENTS: BeatAssignment[] = [
+  {
+    id: 1,
+    beat_id: "B-01",
+    beat_name: "Central Park Perimeter",
+    zone: "North Manhattan",
+    priority: "High",
+    assigned_officer: "John Smith",
+    shift: "Morning",
+    status: "Active",
+    checkpoints: 9,
+    last_patrol_at: new Date(Date.now() - 18 * 60000).toISOString(),
+  },
+  {
+    id: 2,
+    beat_id: "B-02",
+    beat_name: "Times Square Core",
+    zone: "Midtown",
+    priority: "High",
+    assigned_officer: "Sarah Connor",
+    shift: "Evening",
+    status: "Active",
+    checkpoints: 12,
+    last_patrol_at: new Date(Date.now() - 43 * 60000).toISOString(),
+  },
+  {
+    id: 3,
+    beat_id: "B-03",
+    beat_name: "Brooklyn Bridge Watch",
+    zone: "Lower East",
+    priority: "Medium",
+    assigned_officer: "Mike Johnson",
+    shift: "Night",
+    status: "On Hold",
+    checkpoints: 6,
+    last_patrol_at: new Date(Date.now() - 130 * 60000).toISOString(),
+  },
+  {
+    id: 4,
+    beat_id: "B-04",
+    beat_name: "Financial District Patrol",
+    zone: "Downtown",
+    priority: "Low",
+    assigned_officer: "Eva Williams",
+    shift: "Morning",
+    status: "Completed",
+    checkpoints: 7,
+    last_patrol_at: new Date(Date.now() - 5 * 3600000).toISOString(),
+  },
+  {
+    id: 5,
+    beat_id: "B-05",
+    beat_name: "East Village Grid",
+    zone: "East Manhattan",
+    priority: "Medium",
+    assigned_officer: "Liam Garcia",
+    shift: "Evening",
+    status: "Active",
+    checkpoints: 8,
+    last_patrol_at: new Date(Date.now() - 72 * 60000).toISOString(),
   },
 ];

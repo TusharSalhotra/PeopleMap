@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Alert, Layout, Menu, Typography } from "antd";
-import { EnvironmentOutlined, RadarChartOutlined } from "@ant-design/icons";
+import { EnvironmentOutlined, RadarChartOutlined, DeploymentUnitOutlined } from "@ant-design/icons";
 import SiteMapView from "./components/SiteMapView";
 import LiveTrackingView from "./components/LiveTrackingView";
+import BeatManagementView from "./components/BeatManagementView";
 import "./App.css";
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
 
-type View = "sitemap" | "tracking";
+type View = "sitemap" | "tracking" | "beats";
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>("sitemap");
@@ -35,6 +36,11 @@ export default function App() {
               icon: <RadarChartOutlined />,
               label: "Live Tracking",
             },
+            {
+              key: "beats",
+              icon: <DeploymentUnitOutlined />,
+              label: "Beat Management",
+            },
           ]}
           style={{ marginLeft: 24, flex: 1, minWidth: 0, background: "transparent", borderBottom: "none" }}
         />
@@ -42,13 +48,15 @@ export default function App() {
 
       <Content className="app-content">
         <Alert
-          message="Demo Mode – using dummy data. Replace GOOGLE_API_KEY in src/dummyData.ts with a valid key."
+          message="Demo Mode - using local dummy data. Add REACT_APP_GOOGLE_MAPS_API_KEY in Vercel to enable Google Maps."
           type="warning"
           showIcon
           closable
           style={{ marginBottom: 20 }}
         />
-        {activeView === "sitemap" ? <SiteMapView /> : <LiveTrackingView />}
+        {activeView === "sitemap" && <SiteMapView />}
+        {activeView === "tracking" && <LiveTrackingView />}
+        {activeView === "beats" && <BeatManagementView />}
       </Content>
     </Layout>
   );
