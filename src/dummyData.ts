@@ -96,7 +96,7 @@ export const DUMMY_LOGGED_USERS: TrackingPoint[] = [
   {
     id: 3,
     lat: 40.73,
-    lng: -74,
+    lng: -74.0,
     agent_name: "Mike Johnson",
     patrol: true,
     created_at: new Date(Date.now() - 30 * 60000).toISOString(),

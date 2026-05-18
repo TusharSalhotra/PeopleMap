@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   DirectionsRenderer,
   DirectionsService,
@@ -71,15 +71,12 @@ export default function LiveTrackingView() {
     setRequestStatus("idle");
   };
 
-  const directionsCallback = useCallback(
-    (res: any) => {
-      if (res !== null && res.status === "OK") {
-        setResponse(res);
-        setRequestStatus("done");
-      }
-    },
-    []
-  );
+  const directionsCallback = (res: any) => {
+    if (res !== null && res.status === "OK") {
+      setResponse(res);
+      setRequestStatus("done");
+    }
+  };
 
   useEffect(() => {
     setRecentWaypoints(paginatedMarkers);
@@ -116,7 +113,7 @@ export default function LiveTrackingView() {
                 format="MM/DD/YYYY HH:mm"
                 showTime={{ use12Hours: false }}
                 style={{ width: "100%" }}
-                disabledDate={(d) => d?.isAfter(new Date())}
+                disabledDate={(d) => d && d.isAfter(new Date())}
               />
             </Form.Item>
             <Form.Item label="End Time" name="end_time">
@@ -124,7 +121,7 @@ export default function LiveTrackingView() {
                 format="MM/DD/YYYY HH:mm"
                 showTime={{ use12Hours: false }}
                 style={{ width: "100%" }}
-                disabledDate={(d) => d?.isAfter(new Date())}
+                disabledDate={(d) => d && d.isAfter(new Date())}
               />
             </Form.Item>
             <Flex justify="end" gap={8}>
@@ -174,8 +171,8 @@ export default function LiveTrackingView() {
                           options={{
                             origin: { lat: recentWaypoints[0].lat, lng: recentWaypoints[0].lng },
                             destination: {
-                              lat: recentWaypoints[recentWaypoints.length - 1]?.lat ?? recentWaypoints[0].lat,
-                              lng: recentWaypoints[recentWaypoints.length - 1]?.lng ?? recentWaypoints[0].lng,
+                              lat: recentWaypoints[recentWaypoints.length - 1].lat,
+                              lng: recentWaypoints[recentWaypoints.length - 1].lng,
                             },
                             travelMode: google.maps.TravelMode.DRIVING,
                             waypoints: recentWaypoints.slice(1, -1).map((p) => ({
@@ -194,7 +191,7 @@ export default function LiveTrackingView() {
                           preserveViewport: true,
                           polylineOptions: {
                             strokeColor: "#FF0000",
-                            strokeOpacity: 1,
+                            strokeOpacity: 1.0,
                             strokeWeight: 5,
                           },
                         }}
