@@ -2,9 +2,15 @@
   "name": "live-entities-google-maps",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": "20.x",
+    "npm": "10.x"
+  },
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",
     "antd": "^5.17.0",
+    "ajv": "^8.20.0",
     "dayjs": "^1.11.10",
     "moment": "^2.30.1",
     "react": "^18.3.1",
