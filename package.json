@@ -5,7 +5,7 @@
   "packageManager": "npm@10.8.2",
   "engines": {
     "node": "20.x",
-    "npm": "10.x"
+    "npm": ">=10 <12"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",
