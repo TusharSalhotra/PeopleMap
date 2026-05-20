@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Alert, Button, Input, Layout, Menu, Space, Typography } from "antd";
 import { EnvironmentOutlined, RadarChartOutlined, DeploymentUnitOutlined } from "@ant-design/icons";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import SiteMapView from "./components/SiteMapView";
 import LiveTrackingView from "./components/LiveTrackingView";
 import BeatManagementView from "./components/BeatManagementView";
@@ -10,10 +11,24 @@ import "./App.css";
 const { Header, Content } = Layout;
 const { Title } = Typography;
 
-type View = "sitemap" | "tracking" | "beats";
+const VIEW_PATHS = {
+  sitemap: "/sitemap",
+  tracking: "/tracking",
+  beats: "/beats",
+} as const;
+
+type View = keyof typeof VIEW_PATHS;
+
+function getViewFromPath(pathname: string): View {
+  if (pathname.startsWith(VIEW_PATHS.tracking)) return "tracking";
+  if (pathname.startsWith(VIEW_PATHS.beats)) return "beats";
+  return "sitemap";
+}
 
 export default function App() {
-  const [activeView, setActiveView] = useState<View>("sitemap");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const activeView = getViewFromPath(location.pathname);
   const [googleMapsApiKey, setGoogleMapsApiKey] = useState(() => {
     if (typeof window === "undefined") {
       return DEFAULT_GOOGLE_API_KEY;
@@ -37,8 +52,8 @@ export default function App() {
   };
 
   const resetGoogleMapsApiKey = () => {
-    setApiKeyDraft(DEFAULT_GOOGLE_API_KEY);
-    setGoogleMapsApiKey(DEFAULT_GOOGLE_API_KEY);
+    setApiKeyDraft("");
+    setGoogleMapsApiKey("");
 
     if (typeof window !== "undefined") {
       localStorage.removeItem(GOOGLE_MAPS_API_KEY_STORAGE_KEY);
@@ -55,7 +70,7 @@ export default function App() {
           theme="dark"
           mode="horizontal"
           selectedKeys={[activeView]}
-          onClick={({ key }) => setActiveView(key as View)}
+          onClick={({ key }) => navigate(VIEW_PATHS[key as View])}
           items={[
             {
               key: "sitemap",
@@ -102,9 +117,13 @@ export default function App() {
           closable
           style={{ marginBottom: 20 }}
         />
-        {activeView === "sitemap" && <SiteMapView apiKey={googleMapsApiKey} />}
-        {activeView === "tracking" && <LiveTrackingView apiKey={googleMapsApiKey} />}
-        {activeView === "beats" && <BeatManagementView />}
+        <Routes>
+          <Route path="/" element={<Navigate to={VIEW_PATHS.sitemap} replace />} />
+          <Route path={VIEW_PATHS.sitemap} element={<SiteMapView apiKey={googleMapsApiKey} />} />
+          <Route path={VIEW_PATHS.tracking} element={<LiveTrackingView apiKey={googleMapsApiKey} />} />
+          <Route path={VIEW_PATHS.beats} element={<BeatManagementView />} />
+          <Route path="*" element={<Navigate to={VIEW_PATHS.sitemap} replace />} />
+        </Routes>
       </Content>
     </Layout>
   );
